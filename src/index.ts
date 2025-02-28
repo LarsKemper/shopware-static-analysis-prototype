@@ -69,13 +69,20 @@ async function main(inputArgs: string[]) {
   await spinner.start(`Analyzing files in ${path}...`);
 
   try {
+    const tstart = performance.now();
+
     const fileCount = await analyze(
       classDefinitions,
       classUsages,
       path,
     );
 
-    await spinner.succeed(`Analyzed ${fileCount} files, found ${classDefinitions.size} classes`);
+    const tend = performance.now();
+    await spinner.succeed(
+      `Analyzed ${fileCount} files, found ${classDefinitions.size} classes in ${
+        Math.round(tend - tstart)
+      }ms`,
+    );
     await spinner.start(`Generating report...`);
 
     const writePath = await generate(
