@@ -1,3 +1,4 @@
+import { CSSProperties } from "react";
 import { ClassDefinition } from "../index.d.ts";
 import Root from "./root.tsx";
 import { renderToString } from "npm:react-dom/server";
@@ -16,7 +17,7 @@ export function renderRenderToString({ ...props }: ReportProps): string {
   return renderToString(<Report {...props} />);
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<string, CSSProperties> = {
   table: {
     width: "100%",
     borderCollapse: "collapse",
@@ -42,17 +43,15 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: "#2c2c2c",
     border: "none",
     padding: 8,
-    width: "100%",
     textAlign: "left",
     color: "#ffffff",
   },
   content: {
-    display: "none",
     padding: 8,
     borderTop: "1px solid #444",
     backgroundColor: "#252525",
-  }
-}
+  },
+};
 
 export default function Report({ classUsages, classDefinitions }: ReportProps) {
   const sortedByUsageCount = [...classUsages.entries()].sort((a, b) =>
@@ -64,12 +63,12 @@ export default function Report({ classUsages, classDefinitions }: ReportProps) {
       <h1>Shopware Architecture Report</h1>
       <table style={styles.table}>
         <thead>
-        <tr>
-          <th style={styles.th}>Uses Found</th>
-          <th style={styles.th}>Classname</th>
-          <th style={styles.th}>Domain</th>
-          <th style={styles.th}>Is Internal</th>
-        </tr>
+          <tr>
+            <th style={styles.th}>Uses Found</th>
+            <th style={styles.th}>Classname</th>
+            <th style={styles.th}>Domain</th>
+            <th style={styles.th}>Is Internal</th>
+          </tr>
         </thead>
         <tbody>
           {sortedByUsageCount.map(([className, usages]) => {
@@ -96,17 +95,21 @@ export default function Report({ classUsages, classDefinitions }: ReportProps) {
 function ReportItem({ classInfo, usages }: ReportItemProps) {
   return (
     <tr>
-      <td>{usages.length}</td>
-      <td>
-        <button type="button" style={styles.collapsible}>{classInfo.className}</button>
-        <div style={styles.content}>
-          <ul>
-            {usages.map((file) => `<li>${file}</li>`).join("")}
-          </ul>
-        </div>
+      <td style={styles.td}>{usages.length}</td>
+      <td style={styles.td}>
+        <details>
+          <summary style={styles.collapsible}>{classInfo.className}</summary>
+          <div style={styles.content}>
+            <ul>
+              {usages.map((file) => (
+                <li key={file}>{file}</li>
+              ))}
+            </ul>
+          </div>
+        </details>
       </td>
-      <td>{classInfo.domain || "N/A"}</td>
-      <td>{classInfo.isInternal ? "Yes" : "No"}</td>
+      <td style={styles.td}>{classInfo.domain || "N/A"}</td>
+      <td style={styles.td}>{classInfo.isInternal ? "Yes" : "No"}</td>
     </tr>
   );
 }

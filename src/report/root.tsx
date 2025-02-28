@@ -8,8 +8,8 @@ const styles: Record<string, React.CSSProperties> = {
     margin: 20,
     backgroundColor: "#121212",
     color: "#e0e0e0",
-  }
-}
+  },
+};
 
 export default function Root({ children }: RootProps) {
   return (
