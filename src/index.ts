@@ -3,23 +3,26 @@ import { parseOptions, parser } from "./lib/parser.ts";
 import { scanFiles } from "./lib/utils.ts";
 import { queryClassDefinitions, queryClassUsages } from "./query/index.ts";
 import { renderRenderToString } from "./report/report.tsx";
+import { parseArgs } from "jsr:@std/cli/parse-args";
 
 const classDefinitions = new Map<string, ClassDefinition>();
 const classUsages = new Map<string, string[]>();
 
-const pathToScan = Deno.args[0];
-const domains = Deno.args[1]?.split(",");
+const flags = parseArgs(Deno.args, {
+  string: ["path", "domains", "sort"],
+  default: { domains: undefined, sort: "usage" },
+});
 
-if (!pathToScan) {
+if (!flags.path) {
   console.error("Please provide a path to scan");
   Deno.exit(1);
 }
 
-console.log(`Scanning path: ${pathToScan}`);
+console.log(`Scanning path: ${flags.path}`);
 console.log("Scanning... This may take a while");
 
 let filesScanned = 0;
-await scanFiles(pathToScan, (fullPath, data) => {
+await scanFiles(flags.path, (fullPath, data) => {
   try {
     const tree = parser.parse(data, undefined, parseOptions);
 
@@ -42,7 +45,8 @@ try {
   const report = renderRenderToString({
     classUsages,
     classDefinitions,
-    domains,
+    domains: flags.domains?.split(","),
+    sortKey: flags.sort,
   });
 
   Deno.writeTextFileSync(reportPath, report);

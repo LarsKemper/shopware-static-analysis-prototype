@@ -2,12 +2,13 @@ import { CSSProperties } from "react";
 import { ClassDefinition } from "../index.d.ts";
 import Root from "./root.tsx";
 import { renderToString } from "npm:react-dom/server";
-import { calculateStabilityRatio } from "../lib/utils.ts";
+import { calculateStabilityRatio, sort } from "../lib/utils.ts";
 
 export interface ReportProps {
   classUsages: Map<string, string[]>;
   classDefinitions: Map<string, ClassDefinition>;
   domains?: string[];
+  sortKey?: string;
 }
 
 interface ReportItemProps {
@@ -56,15 +57,19 @@ const styles: Record<string, CSSProperties> = {
 };
 
 export default function Report(
-  { classUsages, classDefinitions, domains }: ReportProps,
+  { classUsages, classDefinitions, domains, sortKey }: ReportProps,
 ) {
-  const sortedByUsageCount = [...classUsages.entries()].sort((a, b) =>
-    b[1].length - a[1].length
-  ).filter(([className]) => {
-    const classInfo = classDefinitions.get(className);
+  let entries = sort(
+    classUsages,
+    classDefinitions,
+    sortKey || "usage",
+  );
 
-    return !(domains && classInfo && !domains.includes(classInfo.domain || ""));
-  });
+  if (domains) {
+    entries = entries.filter(([_, classInfo]) =>
+      !(domains && classInfo && !domains.includes(classInfo.domain || ""))
+    );
+  }
 
   return (
     <Root>
@@ -80,10 +85,10 @@ export default function Report(
           </tr>
         </thead>
         <tbody>
-          {sortedByUsageCount.map(([className, usages]) => {
-            const classInfo = classDefinitions.get(className);
+          {entries.map(([className, classInfo]) => {
+            const usages = classUsages.get(className);
 
-            if (!classInfo) {
+            if (!usages) {
               return null;
             }
 
@@ -117,7 +122,8 @@ function ReportItem({ classInfo, usages }: ReportItemProps) {
       </td>
       <td style={styles.td}>{classInfo.domain || "N/A"}</td>
       <td style={styles.td}>
-        {calculateStabilityRatio(classInfo.imports.length, usages.length)}
+        {calculateStabilityRatio(classInfo.imports.length, usages.length)
+          .toFixed(2)}
       </td>
       <td style={styles.td}>{classInfo.isInternal ? "Yes" : "No"}</td>
     </tr>

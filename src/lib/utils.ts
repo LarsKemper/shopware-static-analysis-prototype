@@ -1,5 +1,62 @@
 import { join } from "https://deno.land/std@0.106.0/path/mod.ts";
 import { globbyStream } from "globby";
+import { ClassDefinition } from "../index.d.ts";
+
+export function sort(
+  classUsage: Map<string, string[]>,
+  classDefinitions: Map<string, ClassDefinition>,
+  sort: string,
+): [string, ClassDefinition][] {
+  if (!["classname", "domain", "stability", "usage"].includes(sort)) {
+    return [];
+  }
+
+  return [...classDefinitions.entries()].sort((a, b) => {
+    switch (sort) {
+      case "classname":
+        return b[0].localeCompare(a[0], undefined, {
+          sensitivity: "base",
+          numeric: true,
+        });
+
+      case "domain": {
+        const domainA = classDefinitions.get(a[0])?.domain || "";
+        const domainB = classDefinitions.get(b[0])?.domain || "";
+
+        return domainA.localeCompare(domainB, undefined, {
+          sensitivity: "base",
+          numeric: true,
+        });
+      }
+
+      case "stability": {
+        const classA = classDefinitions.get(a[0]);
+        const classB = classDefinitions.get(b[0]);
+
+        if (!classA || !classB) {
+          return 0;
+        }
+
+        return calculateStabilityRatio(
+          classB.imports.length,
+          classUsage.get(b[0])?.length || 0,
+        ) -
+          calculateStabilityRatio(
+            classA.imports.length,
+            classUsage.get(a[0])?.length || 0,
+          );
+      }
+
+      case "usage": {
+        return (classUsage.get(b[0])?.length || 0) -
+          (classUsage.get(a[0])?.length || 0);
+      }
+
+      default:
+        return 0;
+    }
+  });
+}
 
 export async function scanFiles(
   path: string,
@@ -47,6 +104,9 @@ export async function scanFiles(
   stable class -> class 2
   stable class -> class 3
 */
-export function calculateStabilityRatio(o: number, i: number, decimals = 2): string {
-  return ((o / (i + o)).toFixed(decimals));
+export function calculateStabilityRatio(
+  o: number,
+  i: number,
+): number {
+  return o / (i + o);
 }
