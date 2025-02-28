@@ -1,0 +1,12 @@
+{
+  "nodeModulesDir": "auto",
+  "tasks": {
+    "dev": "deno run --watch --allow-read --allow-write --allow-ffi --allow-sys --allow-env ./src/index.ts",
+    "test": "deno test --allow-read",
+    "lint": "deno lint",
+    "format": "deno fmt"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}

@@ -1,10 +1,12 @@
 # shopware-static-analysis-prototype
 
-An example prototype to utilize [tree-sitter](https://github.com/tree-sitter/tree-sitter) to query data about the
-shopware codebase and visualize it.
+An example prototype to utilize
+[tree-sitter](https://github.com/tree-sitter/tree-sitter) to query data about
+the shopware codebase and visualize it.
 
 > [!NOTE]
-> Be aware that this code is messy and just to give you a quick start to experiment on your own
+> Be aware that this code is messy and just to give you a quick start to
+> experiment on your own
 
 ## Get started
 
