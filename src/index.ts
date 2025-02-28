@@ -41,6 +41,7 @@ async function generate(
   });
 
   await Deno.writeTextFile(reportPath, report);
+  return await Deno.realPath(reportPath);
 }
 
 async function main(inputArgs: string[]) {
@@ -77,14 +78,14 @@ async function main(inputArgs: string[]) {
     await spinner.succeed(`Analyzed ${fileCount} files, found ${classDefinitions.size} classes`);
     await spinner.start(`Generating report...`);
 
-    await generate(
+    const writePath = await generate(
       classDefinitions,
       classUsages,
       sort,
       domains,
     );
 
-    await spinner.succeed("Report generated");
+    await spinner.succeed(`Report generated to ${writePath}`);
     Deno.exit(0);
   } catch (error) {
     await spinner.fail("Failed to analyze files");
