@@ -1,7 +1,6 @@
-import { CSSProperties } from "react";
 import { ClassDefinition } from "../index.d.ts";
 import Root from "./root.tsx";
-import { renderToString } from "npm:react-dom/server";
+import { renderToString } from "react-dom/server";
 import { calculateStabilityRatio, sort } from "../lib/utils.ts";
 
 export interface ReportProps {
@@ -16,11 +15,11 @@ interface ReportItemProps {
   usages: string[];
 }
 
-export function renderRenderToString({ ...props }: ReportProps): string {
+export function renderReportToString({ ...props }: ReportProps): string {
   return renderToString(<Report {...props} />);
 }
 
-const styles: Record<string, CSSProperties> = {
+const styles: Record<string, React.CSSProperties> = {
   table: {
     width: "100%",
     borderCollapse: "collapse",
@@ -78,6 +77,7 @@ export default function Report(
         <thead>
           <tr>
             <th style={styles.th}>Uses Found</th>
+            <th style={styles.th}>Dependencies</th>
             <th style={styles.th}>Classname</th>
             <th style={styles.th}>Domain</th>
             <th style={styles.th}>Stability</th>
@@ -110,6 +110,7 @@ function ReportItem({ classInfo, usages }: ReportItemProps) {
   return (
     <tr>
       <td style={styles.td}>{usages.length}</td>
+      <td style={styles.td}>{classInfo.imports.length}</td>
       <td style={styles.td}>
         <details>
           <summary style={styles.collapsible}>{classInfo.className}</summary>

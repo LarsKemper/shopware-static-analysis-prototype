@@ -234,6 +234,7 @@
       "jsr:@std/assert@1",
       "npm:@types/react@*",
       "npm:globby@*",
+      "npm:react-dom@*",
       "npm:react@*",
       "npm:tree-sitter-php@*",
       "npm:tree-sitter@*"

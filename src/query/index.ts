@@ -15,7 +15,7 @@ export function queryClassDefinitions(
     "";
 
   if (!namespace || !className) {
-    return;
+    return; // TODO: lot of classes are not being captured?!
   }
 
   const domain = captures.find((c) => c.name === "package")?.node.text ?? "";

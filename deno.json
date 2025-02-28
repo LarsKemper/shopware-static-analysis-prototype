@@ -14,7 +14,8 @@
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
-    "react": "npm:react",
+    "react/jsx-runtime": "npm:react/jsx-runtime",
+    "react-dom/server": "npm:react-dom/server",
     "@types/react": "npm:@types/react",
     "tree-sitter": "npm:tree-sitter",
     "tree-sitter-php": "npm:tree-sitter-php",

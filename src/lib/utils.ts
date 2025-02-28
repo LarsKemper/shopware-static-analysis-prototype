@@ -1,14 +1,16 @@
 import { join } from "https://deno.land/std@0.106.0/path/mod.ts";
 import { globbyStream } from "globby";
 import { ClassDefinition } from "../index.d.ts";
+import { OPTIONS } from "./cli.ts";
 
 export function sort(
   classUsage: Map<string, string[]>,
   classDefinitions: Map<string, ClassDefinition>,
   sort: string,
 ): [string, ClassDefinition][] {
-  if (!["classname", "domain", "stability", "usage"].includes(sort)) {
-    return [];
+  if (!OPTIONS.sort.includes(sort)) {
+    console.warn("Invalid sort key. Use --help for more information.");
+    sort = "usage";
   }
 
   return [...classDefinitions.entries()].sort((a, b) => {
@@ -40,16 +42,20 @@ export function sort(
         return calculateStabilityRatio(
           classB.imports.length,
           classUsage.get(b[0])?.length || 0,
-        ) -
-          calculateStabilityRatio(
-            classA.imports.length,
-            classUsage.get(a[0])?.length || 0,
-          );
+        ) - calculateStabilityRatio(
+          classA.imports.length,
+          classUsage.get(a[0])?.length || 0,
+        );
       }
 
       case "usage": {
         return (classUsage.get(b[0])?.length || 0) -
           (classUsage.get(a[0])?.length || 0);
+      }
+
+      case "dependencies": {
+        return (classDefinitions.get(b[0])?.imports.length || 0) -
+          (classDefinitions.get(a[0])?.imports.length || 0);
       }
 
       default:

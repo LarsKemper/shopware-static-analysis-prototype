@@ -2,7 +2,7 @@ import { ClassDefinition } from "./index.d.ts";
 import { parseOptions, parser } from "./lib/parser.ts";
 import { scanFiles } from "./lib/utils.ts";
 import { queryClassDefinitions, queryClassUsages } from "./query/index.ts";
-import { renderRenderToString } from "./report/report.tsx";
+import { renderReportToString } from "./report/report.tsx";
 import { parseArguments, printHelp } from "./lib/cli.ts";
 import Spinner from "https://deno.land/x/cli_spinners@v0.0.2/mod.ts";
 
@@ -31,7 +31,7 @@ async function generateReport(
   domains?: string[],
 ): Promise<string> {
   const reportPath = "./out/sw-architecture-report.html";
-  const reportContent = renderRenderToString({
+  const reportContent = renderReportToString({
     classUsages,
     classDefinitions,
     domains,
@@ -46,7 +46,7 @@ async function generateReport(
 async function main(inputArgs: string[]): Promise<void> {
   const args = parseArguments(inputArgs);
 
-  if (args.help) {
+  if (args.help || Deno.args.length === 0) {
     printHelp();
     Deno.exit(0);
   }
