@@ -6,6 +6,7 @@ import { renderToString } from "npm:react-dom/server";
 export interface ReportProps {
   classUsages: Map<string, string[]>;
   classDefinitions: Map<string, ClassDefinition>;
+  domains?: string[];
 }
 
 interface ReportItemProps {
@@ -53,10 +54,16 @@ const styles: Record<string, CSSProperties> = {
   },
 };
 
-export default function Report({ classUsages, classDefinitions }: ReportProps) {
+export default function Report(
+  { classUsages, classDefinitions, domains }: ReportProps,
+) {
   const sortedByUsageCount = [...classUsages.entries()].sort((a, b) =>
     b[1].length - a[1].length
-  );
+  ).filter(([className]) => {
+    const classInfo = classDefinitions.get(className);
+
+    return !(domains && classInfo && !domains.includes(classInfo.domain || ""));
+  });
 
   return (
     <Root>
@@ -101,9 +108,7 @@ function ReportItem({ classInfo, usages }: ReportItemProps) {
           <summary style={styles.collapsible}>{classInfo.className}</summary>
           <div style={styles.content}>
             <ul>
-              {usages.map((file) => (
-                <li key={file}>{file}</li>
-              ))}
+              {usages.map((file) => <li key={file}>{file}</li>)}
             </ul>
           </div>
         </details>

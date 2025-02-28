@@ -9,6 +9,7 @@ const classUsages = new Map<string, string[]>();
 const classDefinitions = new Map<string, ClassDefinition>();
 
 const pathToScan = Deno.args[0];
+const domains = Deno.args[1]?.split(",");
 
 if (!pathToScan) {
   console.error("Please provide a path to scan");
@@ -39,7 +40,11 @@ console.log("found class usages:", classUsages.size);
 
 try {
   const reportPath = "./out/sw-architecture-report.html";
-  const report = renderRenderToString({ classUsages, classDefinitions });
+  const report = renderRenderToString({
+    classUsages,
+    classDefinitions,
+    domains,
+  });
 
   Deno.writeTextFileSync(reportPath, report);
   console.log("HTML report written to", reportPath);
