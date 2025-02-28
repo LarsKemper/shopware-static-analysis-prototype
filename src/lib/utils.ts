@@ -93,6 +93,7 @@ export async function scanFiles(
   s = stability ratio: 0 = max. stability, 1 = max. instability
   o = output range: number of class imports
   i = input range: number of classes that import the class
+  (by R.C. Martin)
 
   example for max. stability:
   class 1 -> stable class

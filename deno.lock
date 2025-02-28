@@ -216,7 +216,10 @@
     "https://deno.land/std@0.106.0/path/mod.ts": "4465dc494f271b02569edbb4a18d727063b5dbd6ed84283ff906260970a15d12",
     "https://deno.land/std@0.106.0/path/posix.ts": "b81974c768d298f8dcd2c720229639b3803ca4a241fa9a355c762fa2bc5ef0c1",
     "https://deno.land/std@0.106.0/path/separator.ts": "8fdcf289b1b76fd726a508f57d3370ca029ae6976fcde5044007f062e643ff1c",
-    "https://deno.land/std@0.106.0/path/win32.ts": "f4a3d4a3f2c9fe894da046d5eac48b5e789a0ebec5152b2c0985efe96a9f7ae1"
+    "https://deno.land/std@0.106.0/path/win32.ts": "f4a3d4a3f2c9fe894da046d5eac48b5e789a0ebec5152b2c0985efe96a9f7ae1",
+    "https://deno.land/std@0.200.0/assert/assert.ts": "9a97dad6d98c238938e7540736b826440ad8c1c1e54430ca4c4e623e585607ee",
+    "https://deno.land/std@0.200.0/assert/assertion_error.ts": "4d0bde9b374dfbcbe8ac23f54f567b77024fb67dbb1906a852d67fe050d42f56",
+    "https://deno.land/std@0.200.0/flags/mod.ts": "a5ac18af6583404f21ea03771f8816669d901e0ff4374020870334d6f61d73d5"
   },
   "workspace": {
     "dependencies": [
