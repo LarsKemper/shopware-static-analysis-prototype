@@ -1,4 +1,4 @@
-import { classDefinitionQuery, useQuery } from "./definitions.ts";
+import { classDefinitionQuery, usageQuery } from "./definitions.ts";
 import { Tree } from "../lib/parser.ts";
 import { ClassDefinition } from "../index.d.ts";
 
@@ -7,16 +7,19 @@ export function queryClassDefinitions(
   path: string,
   classDefinitions: Map<string, ClassDefinition>,
 ): void {
-  const queryCaptures = classDefinitionQuery.captures(tree.rootNode);
+  const defQueryCaptures = classDefinitionQuery.captures(tree.rootNode);
 
-  const comments = queryCaptures.filter((c) => c.name === "comment");
+  const comments = defQueryCaptures.filter((c) => c.name === "comment");
   const isInternal = comments.some((c) => c.node.text.includes("@internal"));
-  const namespace = queryCaptures.find((c) => c.name === "namespace")?.node
-    ?.text;
-  const className = queryCaptures.find((c) => c.name === "classname")?.node
-    ?.text;
-  const package_domain = queryCaptures.find((c) => c.name === "package")?.node
-    ?.text;
+  const namespace =
+    defQueryCaptures.find((c) => c.name === "namespace")?.node.text ?? "";
+  const className =
+    defQueryCaptures.find((c) => c.name === "classname")?.node.text ?? "";
+  const packageDomain =
+    defQueryCaptures.find((c) => c.name === "package")?.node.text ?? "";
+  const imports = defQueryCaptures.filter((c) => c.name === "type").map((c) =>
+    c.node.text
+  );
 
   if (!namespace || !className) {
     return;
@@ -26,8 +29,9 @@ export function queryClassDefinitions(
     isInternal,
     namespace,
     className,
+    imports,
     fileName: path,
-    domain: package_domain,
+    domain: packageDomain,
   });
 }
 
@@ -36,7 +40,7 @@ export function queryClassUsages(
   path: string,
   classUsages: Map<string, string[]>,
 ): void {
-  const queryCaptures = useQuery.captures(tree.rootNode);
+  const queryCaptures = usageQuery.captures(tree.rootNode);
   const uses = queryCaptures.map((c) => c.node.text);
 
   uses.forEach((u) => {

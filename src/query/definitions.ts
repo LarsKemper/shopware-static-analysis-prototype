@@ -1,7 +1,7 @@
 import { Query } from "tree-sitter";
 import { phpLang } from "../lib/parser.ts";
 
-export const useQuery = new Query(
+export const usageQuery = new Query(
   phpLang,
   `(qualified_name) @type`,
 );
@@ -13,7 +13,8 @@ export const classDefinitionQuery = new Query(
     (namespace_definition
       name: (namespace_name) @namespace
     )
-    (comment)? @comment
+    (namespace_use_declaration (namespace_use_clause (qualified_name) @type))
+    (comment) @comment
     (class_declaration 
       attributes: 
         (attribute_list

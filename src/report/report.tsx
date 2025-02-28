@@ -2,6 +2,7 @@ import { CSSProperties } from "react";
 import { ClassDefinition } from "../index.d.ts";
 import Root from "./root.tsx";
 import { renderToString } from "npm:react-dom/server";
+import { calculateStabilityRatio } from "../lib/utils.ts";
 
 export interface ReportProps {
   classUsages: Map<string, string[]>;
@@ -74,6 +75,7 @@ export default function Report(
             <th style={styles.th}>Uses Found</th>
             <th style={styles.th}>Classname</th>
             <th style={styles.th}>Domain</th>
+            <th style={styles.th}>Stability</th>
             <th style={styles.th}>Is Internal</th>
           </tr>
         </thead>
@@ -114,6 +116,9 @@ function ReportItem({ classInfo, usages }: ReportItemProps) {
         </details>
       </td>
       <td style={styles.td}>{classInfo.domain || "N/A"}</td>
+      <td style={styles.td}>
+        {calculateStabilityRatio(classInfo.imports.length, usages.length)}
+      </td>
       <td style={styles.td}>{classInfo.isInternal ? "Yes" : "No"}</td>
     </tr>
   );

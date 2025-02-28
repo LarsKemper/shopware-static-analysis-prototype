@@ -3,5 +3,6 @@ export type ClassDefinition = {
   className: string;
   fileName: string;
   isInternal: boolean;
+  imports: string[];
   domain?: string;
 };

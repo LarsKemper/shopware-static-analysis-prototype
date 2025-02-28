@@ -4,9 +4,8 @@ import { scanFiles } from "./lib/utils.ts";
 import { queryClassDefinitions, queryClassUsages } from "./query/index.ts";
 import { renderRenderToString } from "./report/report.tsx";
 
-const classUsages = new Map<string, string[]>();
-
 const classDefinitions = new Map<string, ClassDefinition>();
+const classUsages = new Map<string, string[]>();
 
 const pathToScan = Deno.args[0];
 const domains = Deno.args[1]?.split(",");
@@ -48,6 +47,8 @@ try {
 
   Deno.writeTextFileSync(reportPath, report);
   console.log("HTML report written to", reportPath);
+  Deno.exit(0);
 } catch (err) {
   console.error(err);
+  Deno.exit(1);
 }
