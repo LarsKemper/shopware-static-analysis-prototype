@@ -2,7 +2,7 @@ import { ClassDefinition } from "./index.d.ts";
 import { parseOptions, parser } from "./lib/parser.ts";
 import { scanFiles } from "./lib/utils.ts";
 import { queryClassDefinitions, queryClassUsages } from "./query/index.ts";
-import { getReport } from "./report/index.ts";
+import { renderRenderToString } from "./report/report.tsx";
 
 const classUsages = new Map<string, string[]>();
 
@@ -39,7 +39,7 @@ console.log("found class usages:", classUsages.size);
 
 try {
   const reportPath = "./out/sw-architecture-report.html";
-  const report = getReport(classUsages, classDefinitions);
+  const report = renderRenderToString({ classUsages, classDefinitions });
 
   Deno.writeTextFileSync(reportPath, report);
   console.log("HTML report written to", reportPath);

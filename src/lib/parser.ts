@@ -1,5 +1,5 @@
-import TreeSitterPhp from "npm:tree-sitter-php@0.23.12";
-import Parser, { Language } from "npm:tree-sitter@0.22.4";
+import TreeSitterPhp from "tree-sitter-php";
+import Parser, { Language } from "tree-sitter";
 
 export const parseOptions = {
   bufferSize: 1024 * 1024,

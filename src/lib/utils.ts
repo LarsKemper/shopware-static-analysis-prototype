@@ -1,5 +1,5 @@
 import { join } from "https://deno.land/std@0.106.0/path/mod.ts";
-import { globbyStream } from "npm:globby";
+import { globbyStream } from "globby";
 
 export async function scanFiles(
   path: string,
@@ -16,7 +16,12 @@ export async function scanFiles(
   });
 
   for await (const p of paths) {
+    if (typeof p !== "string") {
+      continue;
+    }
+
     const fullPath = join(path, p);
+
     try {
       const data = await Deno.readTextFile(fullPath);
       callback(fullPath, data);

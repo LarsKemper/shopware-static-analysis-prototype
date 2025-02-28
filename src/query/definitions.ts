@@ -1,4 +1,4 @@
-import { Query } from "npm:tree-sitter";
+import { Query } from "tree-sitter";
 import { phpLang } from "../lib/parser.ts";
 
 export const useQuery = new Query(
