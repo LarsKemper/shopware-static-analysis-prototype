@@ -29,8 +29,8 @@ export function parseArguments(args: string[]): Args {
 }
 
 export function printHelp(): void {
-  console.log(`Usage: swag-sa --path [path] [OPTIONS...]`);
-  console.log("\nOptional flags:");
+  console.log(`Usage: swag-sa --path [path] [OPTIONS...]\n`);
+  console.log("Optional flags:");
   console.log("  -h, --help                Display this help and exit");
   console.log("  -s, --sort                Set the sorting key for the report");
   console.log(

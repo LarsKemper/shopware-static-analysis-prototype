@@ -7,23 +7,24 @@ export function queryClassDefinitions(
   path: string,
   classDefinitions: Map<string, ClassDefinition>,
 ): void {
-  const defQueryCaptures = classDefinitionQuery.captures(tree.rootNode);
+  const captures = classDefinitionQuery.captures(tree.rootNode);
 
-  const comments = defQueryCaptures.filter((c) => c.name === "comment");
-  const isInternal = comments.some((c) => c.node.text.includes("@internal"));
-  const namespace =
-    defQueryCaptures.find((c) => c.name === "namespace")?.node.text ?? "";
-  const className =
-    defQueryCaptures.find((c) => c.name === "classname")?.node.text ?? "";
-  const packageDomain =
-    defQueryCaptures.find((c) => c.name === "package")?.node.text ?? "";
-  const imports = defQueryCaptures.filter((c) => c.name === "type").map((c) =>
-    c.node.text
-  );
+  const namespace = captures.find((c) => c.name === "namespace")?.node.text ??
+    "";
+  const className = captures.find((c) => c.name === "classname")?.node.text ??
+    "";
 
   if (!namespace || !className) {
     return;
   }
+
+  const domain = captures.find((c) => c.name === "package")?.node.text ?? "";
+  const isInternal = captures.some((c) =>
+    c.name === "comment" && c.node.text.includes("@internal")
+  );
+  const imports = captures.filter((c) => c.name === "type").map((c) =>
+    c.node.text
+  );
 
   classDefinitions.set(`${namespace}\\${className}`, {
     isInternal,
@@ -31,7 +32,7 @@ export function queryClassDefinitions(
     className,
     imports,
     fileName: path,
-    domain: packageDomain,
+    domain,
   });
 }
 
@@ -40,14 +41,13 @@ export function queryClassUsages(
   path: string,
   classUsages: Map<string, string[]>,
 ): void {
-  const queryCaptures = usageQuery.captures(tree.rootNode);
-  const uses = queryCaptures.map((c) => c.node.text);
+  const uses = usageQuery.captures(tree.rootNode).map((c) => c.node.text);
 
-  uses.forEach((u) => {
-    if (!classUsages.has(u)) {
-      classUsages.set(u, []);
+  uses.forEach((use) => {
+    if (!classUsages.has(use)) {
+      classUsages.set(use, []);
     }
 
-    classUsages.get(u)?.push(path);
+    classUsages.get(use)?.push(path);
   });
 }

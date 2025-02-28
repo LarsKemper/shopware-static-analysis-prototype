@@ -6,16 +6,15 @@ import { renderRenderToString } from "./report/report.tsx";
 import { parseArguments, printHelp } from "./lib/cli.ts";
 import Spinner from "https://deno.land/x/cli_spinners@v0.0.2/mod.ts";
 
-async function analyze(
+async function analyzeFiles(
+  path: string,
   classDefinitions: Map<string, ClassDefinition>,
   classUsages: Map<string, string[]>,
-  path: string,
-) {
+): Promise<number> {
   let fileCount = 0;
 
   await scanFiles(path, (fullPath, data) => {
     const tree = parser.parse(data, undefined, parseOptions);
-
     fileCount++;
 
     queryClassDefinitions(tree, fullPath, classDefinitions);
@@ -25,26 +24,26 @@ async function analyze(
   return fileCount;
 }
 
-async function generate(
+async function generateReport(
   classDefinitions: Map<string, ClassDefinition>,
   classUsages: Map<string, string[]>,
   sort: string,
   domains?: string[],
-) {
+): Promise<string> {
   const reportPath = "./out/sw-architecture-report.html";
-
-  const report = renderRenderToString({
+  const reportContent = renderRenderToString({
     classUsages,
     classDefinitions,
     domains,
     sortKey: sort,
   });
 
-  await Deno.writeTextFile(reportPath, report);
-  return await Deno.realPath(reportPath);
+  await Deno.writeTextFile(reportPath, reportContent);
+
+  return Deno.realPath(reportPath);
 }
 
-async function main(inputArgs: string[]) {
+async function main(inputArgs: string[]): Promise<void> {
   const args = parseArguments(inputArgs);
 
   if (args.help) {
@@ -52,50 +51,44 @@ async function main(inputArgs: string[]) {
     Deno.exit(0);
   }
 
-  const path: string | null = args.path;
+  const path = args.path;
 
   if (!path) {
-    console.error("Please provide a path to scan");
+    console.error("Error: Please provide a path to scan");
     Deno.exit(1);
   }
 
-  const sort: string = args.sort || "usage";
-  const domains: string[] | undefined = args.domains?.split(",") || undefined;
+  const sort = args.sort || "usage";
+  const domains = args.domains?.split(",");
 
   const classDefinitions = new Map<string, ClassDefinition>();
   const classUsages = new Map<string, string[]>();
 
   const spinner = Spinner.getInstance();
-  await spinner.start(`Analyzing files in ${path}...`);
 
   try {
-    const tstart = performance.now();
+    await spinner.start(`Analyzing files in ${path}...`);
+    const startTime = performance.now();
 
-    const fileCount = await analyze(
-      classDefinitions,
-      classUsages,
-      path,
-    );
+    const fileCount = await analyzeFiles(path, classDefinitions, classUsages);
 
-    const tend = performance.now();
+    const duration = Math.round(performance.now() - startTime);
     await spinner.succeed(
-      `Analyzed ${fileCount} files, found ${classDefinitions.size} classes in ${
-        Math.round(tend - tstart)
-      }ms`,
+      `Analyzed ${fileCount} files, found ${classDefinitions.size} classes in ${duration}ms`,
     );
-    await spinner.start(`Generating report...`);
 
-    const writePath = await generate(
+    await spinner.start("Generating report...");
+    const reportPath = await generateReport(
       classDefinitions,
       classUsages,
       sort,
       domains,
     );
+    await spinner.succeed(`Report generated: ${reportPath}`);
 
-    await spinner.succeed(`Report generated to ${writePath}`);
     Deno.exit(0);
   } catch (error) {
-    await spinner.fail("Failed to analyze files");
+    await spinner.fail("Error during analysis");
     console.error(error);
     Deno.exit(1);
   }
